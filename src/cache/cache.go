@@ -2,7 +2,6 @@ package cache
 
 import (
 	"errors"
-	"fmt"
 	"runtime"
 	"sync"
 	"time"
@@ -30,10 +29,8 @@ func (c *Cache) SetKey(key string, value string) {
 func (c *Cache) ReadKey(key string) (string, error) {
 	value, ok := c.EntryCache.Load(key)
 	if !ok {
-		fmt.Println("Key not found in cache")
 		return "", errors.New("key not found")
 	}
-	// Update cache entry with last access time
 	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1})
 	return value.(CacheEntry).Value, nil
 }

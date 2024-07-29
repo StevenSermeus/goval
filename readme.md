@@ -21,6 +21,18 @@ Keys are case unsensitive.
 - [ ] Support authentication
 - [ ] Support encryption
 
+## Network Protocol
+
+The server uses TCP to communicate with clients. The server listens on port 8080.
+
+All messages start with a character that represents the type of the message / response.
+
+- `+` String: The message is a string
+- `-` Error: The message is an error
+- `!` Command: The message is a command
+
+The protocol is a delimiter based protocol. The delimiter is the newline character `\n\r\n\r`.
+
 ## Known Issues and Limitations
 
 - No support for concurrent access on the file system

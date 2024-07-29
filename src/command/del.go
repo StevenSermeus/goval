@@ -7,10 +7,11 @@ import (
 	"strings"
 
 	"github.com/StevenSermeus/goval/src/cache"
+	"github.com/StevenSermeus/goval/src/config"
 )
 
-func Delete(key string, cache *cache.Cache) error {
-	filePath := filepath.Join(os.Getenv("DATA_DIR_PATH"), key)
+func Delete(key string, cache *cache.Cache, serverConfig *config.Config) error {
+	filePath := filepath.Join(serverConfig.DataDir, key)
 	err := os.Remove(filePath)
 	if err != nil {
 		return err
@@ -23,11 +24,11 @@ func IsDelCommand(command string) bool {
 	return command[:3] == "DEL"
 }
 
-func ExecuteDelCommand(command string, cache *cache.Cache) error {
+func ExecuteDelCommand(command string, cache *cache.Cache, serverConfig *config.Config) error {
 	commandParts := strings.Split(command, " ")
 	if len(commandParts) != 2 {
 		return errors.New("invalid DEL command")
 	}
 	key := commandParts[1]
-	return Delete(key, cache)
+	return Delete(key, cache, serverConfig)
 }

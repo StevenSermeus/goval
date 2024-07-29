@@ -16,7 +16,7 @@ func Exec(command string, cache *cache.Cache, serverConfig *config.Config) (stri
 	case IsSetCommand(command):
 		return "", ExecuteSetCommand(command, cache, serverConfig)
 	case IsDelCommand(command):
-		return "", ExecuteDelCommand(command, cache)
+		return "", ExecuteDelCommand(command, cache, serverConfig)
 	case IsHealthCheckCommand(command):
 		return ExecuteHealthCheckCommand(command)
 	default:
