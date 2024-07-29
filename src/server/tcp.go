@@ -5,6 +5,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/StevenSermeus/goval/src/cache"
 	"github.com/StevenSermeus/goval/src/command"
@@ -13,7 +14,7 @@ import (
 	"golang.org/x/net/netutil"
 )
 
-func TcpServer(cache *cache.Cache, serverConfig *config.Config) {
+func Tcp(cache *cache.Cache, serverConfig *config.Config) {
 	listener, err := net.Listen("tcp", "0.0.0.0:"+serverConfig.Port)
 	listener = netutil.LimitListener(listener, serverConfig.MaxConnections)
 	if err != nil {
@@ -33,9 +34,27 @@ func TcpServer(cache *cache.Cache, serverConfig *config.Config) {
 func handleClient(conn net.Conn, cache *cache.Cache, serverConfig *config.Config) {
 	logging.Info.Println("Client connected from", conn.RemoteAddr())
 	defer conn.Close()
+	isAuthenticated := false
+	for !isAuthenticated {
+		buffer := make([]byte, 1024)
+		n, err :=
+			conn.Read(buffer)
+		if err != nil || n == 0 {
+			logging.Error.Println("Error reading from client:", err)
+			return
+		}
+		commandString := string(buffer[:n])
+		if strings.TrimSpace(commandString) == serverConfig.Passphrase {
+			conn.Write([]byte("OK"))
+			isAuthenticated = true
+		} else {
+			conn.Write([]byte("ERROR: invalid password"))
+		}
+	}
+	logging.Info.Println("Client authenticated")
 	for {
 		logging.Info.Println("Waiting for command from client")
-		commandString, err := waitForCommand(conn, cache, serverConfig)
+		commandString, err := waitForCommand(conn, serverConfig)
 		if err != nil {
 			if _, ok := err.(EOCError); ok {
 				logging.Info.Println("Client disconnected from", conn.RemoteAddr())
@@ -44,23 +63,25 @@ func handleClient(conn net.Conn, cache *cache.Cache, serverConfig *config.Config
 			logging.Error.Println("Error reading command from client:", err)
 			continue
 		}
-
+		startExecution := time.Now()
 		response, err := command.Exec(commandString, cache, serverConfig)
 		if err != nil {
 			logging.Error.Println("Error executing command:", err)
 			conn.Write([]byte("ERROR: " + err.Error()))
 			continue
 		}
+		logging.Info.Println("Command executed in", time.Since(startExecution))
 		if response != "" {
 			conn.Write([]byte(response))
-		}else{
+		} else {
 			conn.Write([]byte("OK"))
 		}
+
 	}
 	logging.Info.Println("Client disconnected from", conn.RemoteAddr())
 }
 
-func collectAllBuffer(conn net.Conn, n int, data string) (string,error) {
+func collectAllBuffer(conn net.Conn, n int, data string) (string, error) {
 	for i := 0; i < n; i++ {
 		buffer := make([]byte, 1024)
 		n, err := conn.Read(buffer)
@@ -75,12 +96,12 @@ func collectAllBuffer(conn net.Conn, n int, data string) (string,error) {
 	return data, nil
 }
 
-func waitForCommand(conn net.Conn, cache *cache.Cache, serverConfig *config.Config) (string, error){
+func waitForCommand(conn net.Conn, serverConfig *config.Config) (string, error) {
 	buffer := make([]byte, 1024)
 	n, err := conn.Read(buffer)
 	if err != nil || n == 0 {
 		return "", EOCError{}
-	}	
+	}
 	netString := string(buffer[:n])
 	netStringSplit := strings.Split(netString, ":")
 	if len(netStringSplit) < 2 {
@@ -91,8 +112,8 @@ func waitForCommand(conn net.Conn, cache *cache.Cache, serverConfig *config.Conf
 	if err != nil {
 		return "", err
 	}
-	if messageSize / serverConfig.BufferSize > 0 {
-		commandString, err = collectAllBuffer(conn, messageSize / serverConfig.BufferSize, commandString)
+	if messageSize/serverConfig.BufferSize > 0 {
+		commandString, err = collectAllBuffer(conn, messageSize/serverConfig.BufferSize, commandString)
 		if err != nil {
 			return "", err
 		}
@@ -106,4 +127,3 @@ type EOCError struct {
 func (e EOCError) Error() string {
 	return "End of connection"
 }
-

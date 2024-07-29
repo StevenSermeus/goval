@@ -45,21 +45,49 @@ func (c *Cache) DeleteKey(key string) {
 func (c *Cache) CacheSizeManagement(memoryThreshold uint64) {
 	logging.Info.Println("Starting cache size management")
 	var memStats runtime.MemStats
+	channel := make(chan int)
 
 	for {
 		runtime.ReadMemStats(&memStats)
-		if memStats.HeapAlloc/1024/1024 > memoryThreshold {
-			logging.Warning.Println("High memory usage detected, clearing cache")
-			go handleHighMemoryUsage(c)
-			time.Sleep(2 * time.Second)
-		}
 
+		if memStats.HeapAlloc/1024 > memoryThreshold {
+			logging.Warning.Println("Memory usage:", memStats.HeapAlloc/1024, "kB")
+			logging.Warning.Println("High memory usage detected, clearing cache")
+			go handleHighMemoryUsage(c, channel)
+			//Should be blocking until cache is cleared
+			entryCleard := <-channel
+			logging.Info.Println("Cache cleared, ", entryCleard, " entries removed")
+			time.Sleep(2 * time.Second)
+			continue
+		}
 		time.Sleep(1 * time.Second)
 	}
 }
 
-func handleHighMemoryUsage(cache *Cache) {
-	// For the moment we just clear the cache when the memory threshold is exceeded to free up memory
-	cache.EntryCache = sync.Map{}
-	fmt.Println("Cache cleared.")
+func handleHighMemoryUsage(cache *Cache, channel chan int) {
+	var entriesCleared int
+	var minHitCount int
+	var maxHitCount int
+	var meanHitCount float64
+	var nbEntries int
+	cache.EntryCache.Range(func(key, value interface{}) bool {
+		if minHitCount == 0 || value.(CacheEntry).AccessCount < minHitCount {
+			minHitCount = value.(CacheEntry).AccessCount
+		}
+		if value.(CacheEntry).AccessCount > maxHitCount {
+			maxHitCount = value.(CacheEntry).AccessCount
+		}
+		meanHitCount += float64(value.(CacheEntry).AccessCount)
+		nbEntries++
+		return true
+	})
+	meanHitCount = meanHitCount / float64(nbEntries)
+	cache.EntryCache.Range(func(key, value interface{}) bool {
+		if value.(CacheEntry).AccessCount < int(meanHitCount) {
+			cache.EntryCache.Delete(key)
+			entriesCleared++
+		}
+		return true
+	})
+	channel <- entriesCleared
 }

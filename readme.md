@@ -24,3 +24,12 @@ Keys are case unsensitive.
 ## Known Issues and Limitations
 
 - No support for concurrent access on the file system
+
+## How to run
+
+You can mount the server.yml file to the container to change the configuration. The path must be `/production/server.yml`.
+
+```bash
+docker build -t goval .
+docker run -p 8080:8080 goval
+```

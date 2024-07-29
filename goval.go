@@ -9,7 +9,7 @@ import (
 	"github.com/StevenSermeus/goval/src/server"
 )
 
-func main(){
+func main() {
 	logging.Info.Println("Starting goval")
 	logging.Info.Println("Loading config")
 	config, err := config.LoadConfig()
@@ -23,5 +23,5 @@ func main(){
 	logging.Info.Println("Creating config directory")
 	os.MkdirAll("./goval/config", 0755)
 	go cache.CacheSizeManagement(uint64(config.MaxCacheSize))
-	server.TcpServer(&cache,&config)
+	server.Tcp(&cache, &config)
 }
