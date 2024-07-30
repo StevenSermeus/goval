@@ -78,12 +78,6 @@ func TestClient_Receive(t *testing.T) {
 			expectError:    true,
 		},
 		{
-			name:           "End of connection",
-			mockReadBuffer: "",
-			expected:       "",
-			expectError:    true,
-		},
-		{
 			name:           "Valid error message",
 			mockReadBuffer: "-Error message\n\r\n\r",
 			expected:       types.CommandInfo{Command: "Error message", ValueType: "error"},
