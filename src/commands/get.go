@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -14,6 +15,7 @@ import (
 func Get(conn *types.Client, commandInfo types.CommandInfo, key string) error {
 	cacheEntry, err := conn.Cache.ReadKey(key)
 	if err == nil {
+		fmt.Println("Cache hit", cacheEntry)
 		response := types.ResponseInfo{
 			ValueType: cacheEntry.ValueType,
 			Value:     cacheEntry.Value,

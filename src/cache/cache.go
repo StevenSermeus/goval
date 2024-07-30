@@ -32,8 +32,14 @@ func (c *Cache) ReadKey(key string) (CacheEntry, error) {
 	if !ok {
 		return CacheEntry{}, errors.New("key not found")
 	}
-	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1})
-	return value.(CacheEntry), nil
+	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1, ValueType: value.(CacheEntry).ValueType})
+
+	return CacheEntry{
+		Value:       value.(CacheEntry).Value,
+		ValueType:   value.(CacheEntry).ValueType,
+		LastAccess:  time.Now(),
+		AccessCount: value.(CacheEntry).AccessCount + 1,
+	}, nil
 }
 
 func (c *Cache) DeleteKey(key string) {
