@@ -21,6 +21,8 @@ func HandleClient(conn net.Conn, cache *cache.Cache, serverConfig *config.Config
 		if err != nil {
 			break
 		}
+		//This allow non blocking execution of commands on the server
+		//So errors might occur since client waiting for response from request 1 might receive response from request 2 first and vice versa
 		go commands.ExecuteCommad(&client, command)
 	}
 

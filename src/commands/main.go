@@ -26,5 +26,5 @@ func ExecuteCommad(client *types.Client, commandInfo types.CommandInfo) {
 	if err != nil {
 		client.Send(types.ResponseInfo{ValueType: "error", Value: err.Error()})
 	}
-	logging.Info.Println("Command executed in ", time.Since(start))
+	logging.Info.Printf("Command :%s %s %sexecuted in %s (Response might have been faster because cache update is done asynchronously)", "\033[34m", commandInfo.Command, "\033[0m", time.Since(start))
 }

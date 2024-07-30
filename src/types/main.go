@@ -6,7 +6,6 @@ import (
 
 	"github.com/StevenSermeus/goval/src/cache"
 	"github.com/StevenSermeus/goval/src/config"
-	"github.com/StevenSermeus/goval/src/logging"
 	"github.com/StevenSermeus/goval/src/utils"
 )
 
@@ -29,7 +28,6 @@ type ResponseInfo struct {
 }
 
 func (c *Client) Send(data ResponseInfo) {
-	logging.Info.Println("Sending response :", data.Value)
 	valueCode, err := utils.GetCodeFromType(data.ValueType)
 	if err != nil {
 		c.Conn.Write([]byte("-" + err.Error() + "\n\r\n\r"))
