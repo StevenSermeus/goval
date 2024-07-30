@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+	"fmt"
 	"runtime"
 	"sync"
 	"time"
@@ -15,6 +16,7 @@ type CacheEntry struct {
 	ValueType   string
 	LastAccess  time.Time
 	AccessCount int
+	exp         int64
 }
 
 // Cache is a wrapper around sync.Map for storing CacheEntry values.
@@ -23,8 +25,12 @@ type Cache struct {
 }
 
 // function to add a key to the cache
-func (c *Cache) SetKey(key string, value any, valueType string) {
-	c.EntryCache.Store(key, CacheEntry{Value: value, LastAccess: time.Now(), AccessCount: 0, ValueType: valueType})
+func (c *Cache) SetKey(key string, value any, valueType string, exp ...int64) {
+	if len(exp) > 0 {
+		c.EntryCache.Store(key, CacheEntry{Value: value, LastAccess: time.Now(), AccessCount: 0, ValueType: valueType, exp: exp[0]})
+		return
+	}
+	c.EntryCache.Store(key, CacheEntry{Value: value, LastAccess: time.Now(), AccessCount: 0, ValueType: valueType, exp: 0})
 }
 
 func (c *Cache) ReadKey(key string) (CacheEntry, error) {
@@ -32,13 +38,19 @@ func (c *Cache) ReadKey(key string) (CacheEntry, error) {
 	if !ok {
 		return CacheEntry{}, errors.New("key not found")
 	}
-	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1, ValueType: value.(CacheEntry).ValueType})
+	fmt.Println("Read key", key, "from cache with exp", value.(CacheEntry).exp)
+	if value.(CacheEntry).exp != 0 && time.Now().UnixMilli() > value.(CacheEntry).exp {
+		c.DeleteKey(key)
+		return CacheEntry{}, errors.New("key expired")
+	}
+	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1, ValueType: value.(CacheEntry).ValueType, exp: value.(CacheEntry).exp})
 
 	return CacheEntry{
 		Value:       value.(CacheEntry).Value,
 		ValueType:   value.(CacheEntry).ValueType,
 		LastAccess:  time.Now(),
 		AccessCount: value.(CacheEntry).AccessCount + 1,
+		exp:         value.(CacheEntry).exp,
 	}, nil
 }
 

@@ -5,10 +5,10 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/StevenSermeus/goval/src/file"
 	"github.com/StevenSermeus/goval/src/types"
-	"github.com/StevenSermeus/goval/src/utils"
 )
 
 func Get(conn *types.Client, commandInfo types.CommandInfo, key string) error {
@@ -20,24 +20,24 @@ func Get(conn *types.Client, commandInfo types.CommandInfo, key string) error {
 		}
 		conn.Send(response)
 		return nil
+	} else {
+		if err.Error() == "key expired" {
+			go os.Remove(path.Join(conn.ServerConfig.DataDir, key))
+			return errors.New("key not found")
+		}
 	}
 	fileExists := file.FileExists(path.Join(conn.ServerConfig.DataDir, key))
 	if fileExists {
-		fileContent, err := os.ReadFile(path.Join(conn.ServerConfig.DataDir, key))
+		content, err := file.ReadFile(key, conn.ServerConfig)
 		if err != nil {
 			return err
 		}
-		fileContentString := string(fileContent)
-		responseType, err := utils.Type(fileContentString)
-		if err != nil {
-			return err
+		if content.Exp > 0 && content.Exp < time.Now().UnixMilli() {
+			os.Remove(path.Join(conn.ServerConfig.DataDir, key))
+			return errors.New("key not found")
 		}
-		response := types.ResponseInfo{
-			ValueType: responseType,
-			Value:     fileContentString[0:],
-		}
-		conn.Send(response)
-		conn.Cache.SetKey(key, fileContentString[0:], responseType)
+		conn.Send(types.ResponseInfo{ValueType: content.ValueType, Value: content.Value})
+		conn.Cache.SetKey(key, content.Value, content.ValueType)
 		return nil
 	}
 	return errors.New("key not found")

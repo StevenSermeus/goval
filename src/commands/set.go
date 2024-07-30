@@ -2,12 +2,10 @@ package commands
 
 import (
 	"errors"
-	"os"
-	"path"
 	"strings"
 
+	"github.com/StevenSermeus/goval/src/file"
 	"github.com/StevenSermeus/goval/src/types"
-	"github.com/StevenSermeus/goval/src/utils"
 )
 
 func IsSet(commandInfo types.CommandInfo) bool {
@@ -15,15 +13,7 @@ func IsSet(commandInfo types.CommandInfo) bool {
 }
 
 func Set(conn *types.Client, commandInfo types.CommandInfo, key string, value any) error {
-	typeCode, err := utils.GetCodeFromType(commandInfo.ValueType)
-	if err != nil {
-		return err
-	}
-	toWrite := []byte(typeCode + value.(string))
-	err = os.WriteFile(path.Join(conn.ServerConfig.DataDir, key), toWrite, 0644)
-	if err != nil {
-		return err
-	}
+	file.WriteFile(key, commandInfo.ValueType, value, conn.ServerConfig, 0)
 	conn.Send(types.ResponseInfo{ValueType: "string", Value: "OK"})
 	conn.Cache.SetKey(key, value, commandInfo.ValueType)
 	return nil

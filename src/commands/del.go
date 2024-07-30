@@ -10,12 +10,10 @@ import (
 )
 
 func Del(conn *types.Client, commandInfo types.CommandInfo, key string) error {
-	//delete the file from the data directory
 	err := os.Remove(path.Join(conn.ServerConfig.DataDir, key))
 	if err != nil {
 		return err
 	}
-	//delete the key from the cache
 	conn.Cache.DeleteKey(key)
 	conn.Send(types.ResponseInfo{ValueType: "string", Value: "OK"})
 	return nil

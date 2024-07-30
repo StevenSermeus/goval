@@ -20,6 +20,8 @@ func ExecuteCommad(client *types.Client, commandInfo types.CommandInfo) {
 		err = ExecuteDelCommand(client, commandInfo)
 	case IsIncr(commandInfo):
 		err = ExecuteIncrCommand(client, commandInfo)
+	case IsExpr(commandInfo):
+		err = ExecuteExprCommand(client, commandInfo)
 	default:
 		err = errors.New("invalid command")
 	}

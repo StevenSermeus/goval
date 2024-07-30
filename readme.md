@@ -14,7 +14,7 @@ Keys are case unsensitive.
 - [x] Persist data to disk
 - [x] Cache data in memory
 - [x] Support remote access
-- [ ] Support ttl (Time To Live) for keys (Planned for first release)
+- [x] Support ttl/EXPR (Time To Live) for keys (Planned for first release)
 - [ ] Support authentication passphrase (Planned for first release)
 - [ ] Support authentication with user and password (Not planned for first release)
 - [ ] Version calls (Planned for first release)
