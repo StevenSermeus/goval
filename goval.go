@@ -6,7 +6,7 @@ import (
 	"github.com/StevenSermeus/goval/src/cache"
 	"github.com/StevenSermeus/goval/src/config"
 	"github.com/StevenSermeus/goval/src/logging"
-	"github.com/StevenSermeus/goval/src/server"
+	"github.com/StevenSermeus/goval/src/networking"
 )
 
 func main() {
@@ -23,5 +23,5 @@ func main() {
 	logging.Info.Println("Creating config directory")
 	os.MkdirAll("./goval/config", 0755)
 	go cache.CacheSizeManagement(uint64(config.MaxCacheSize))
-	server.Tcp(&cache, &config)
+	networking.Tcp(&cache, &config)
 }

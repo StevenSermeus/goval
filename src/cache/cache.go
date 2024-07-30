@@ -11,7 +11,8 @@ import (
 
 // CacheEntry represents a cache entry with a value and last access time.
 type CacheEntry struct {
-	Value       string
+	Value       any
+	ValueType   string
 	LastAccess  time.Time
 	AccessCount int
 }
@@ -22,17 +23,17 @@ type Cache struct {
 }
 
 // function to add a key to the cache
-func (c *Cache) SetKey(key string, value string) {
-	c.EntryCache.Store(key, CacheEntry{Value: value, LastAccess: time.Now(), AccessCount: 0})
+func (c *Cache) SetKey(key string, value any, valueType string) {
+	c.EntryCache.Store(key, CacheEntry{Value: value, LastAccess: time.Now(), AccessCount: 0, ValueType: valueType})
 }
 
-func (c *Cache) ReadKey(key string) (string, error) {
+func (c *Cache) ReadKey(key string) (CacheEntry, error) {
 	value, ok := c.EntryCache.Load(key)
 	if !ok {
-		return "", errors.New("key not found")
+		return CacheEntry{}, errors.New("key not found")
 	}
 	c.EntryCache.Store(key, CacheEntry{Value: value.(CacheEntry).Value, LastAccess: time.Now(), AccessCount: value.(CacheEntry).AccessCount + 1})
-	return value.(CacheEntry).Value, nil
+	return value.(CacheEntry), nil
 }
 
 func (c *Cache) DeleteKey(key string) {
@@ -51,7 +52,7 @@ func (c *Cache) CacheSizeManagement(memoryThreshold uint64) {
 			logging.Warning.Println("Memory usage:", memStats.HeapAlloc/1024, "kB")
 			logging.Warning.Println("High memory usage detected, clearing cache")
 			go handleHighMemoryUsage(c, channel)
-			//Should be blocking until cache is cleared
+
 			entryCleard := <-channel
 			logging.Info.Println("Cache cleared, ", entryCleard, " entries removed")
 			time.Sleep(2 * time.Second)
