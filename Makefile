@@ -15,7 +15,7 @@ build:
 clean:
 	go clean
 	rm -f $(APP_NAME)
-
+		
 # Run the application
 run: build
 	./$(APP_NAME)/$(APP_NAME)

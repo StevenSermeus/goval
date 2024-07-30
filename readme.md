@@ -14,12 +14,16 @@ Keys are case unsensitive.
 - [x] Persist data to disk
 - [x] Cache data in memory
 - [x] Support remote access
-- [ ] Support ttl (Time To Live) for keys
-- [ ] Support authentication
+- [ ] Support ttl (Time To Live) for keys (Planned for first release)
+- [ ] Support authentication passphrase (Planned for first release)
+- [ ] Support authentication with user and password (Not planned for first release)
+- [ ] Version calls (Planned for first release)
+  - [ ] Get version of the server
+- [ ] Manage access control (Not planned for first release)
 - [ ] Support more data types
-  - [ ] Support integers increment and decrement
-  - [ ] Support lists
-- [ ] Support encryption
+  - [x] Support integers increment and decrement
+  - [ ] Support lists (Not planned for first release)
+- [ ] Support encryption (Not planned for first release)
 
 ## Network Protocol
 
