@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 	logging.Info.Println("Creating config directory")
-	err = os.MkdirAll("./goval/config", 0755)
+	err = os.MkdirAll("./config", 0755)
 	if err != nil {
 		logging.Info.Println("Error creating config directory")
 		panic(err)

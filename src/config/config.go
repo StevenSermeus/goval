@@ -35,7 +35,7 @@ func LoadConfig() (Config, error) {
 		cfg.BufferSize = 1024
 	}
 	if cfg.DataDir == "" {
-		cfg.DataDir = "./goval/data"
+		cfg.DataDir = "./data"
 	}
 	if cfg.Port == "" {
 		cfg.Port = "8080"
