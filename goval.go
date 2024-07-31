@@ -19,9 +19,17 @@ func main() {
 	}
 	var cache = cache.Cache{}
 	logging.Info.Println("Creating data directory")
-	os.MkdirAll(config.DataDir, 0755)
+	err = os.MkdirAll(config.DataDir, 0755)
+	if err != nil {
+		logging.Info.Println("Error creating data directory")
+		panic(err)
+	}
 	logging.Info.Println("Creating config directory")
-	os.MkdirAll("./goval/config", 0755)
+	err = os.MkdirAll("./goval/config", 0755)
+	if err != nil {
+		logging.Info.Println("Error creating config directory")
+		panic(err)
+	}
 	go cache.CacheSizeManagement(uint64(config.MaxCacheSize))
 	networking.Tcp(&cache, &config)
 }
