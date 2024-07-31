@@ -33,7 +33,7 @@ func Get(conn *types.Client, commandInfo types.CommandInfo, key string) error {
 			return err
 		}
 		if content.Exp > 0 && content.Exp < time.Now().UnixMilli() {
-			os.Remove(path.Join(conn.ServerConfig.DataDir, key))
+			go os.Remove(path.Join(conn.ServerConfig.DataDir, key))
 			return errors.New("key not found")
 		}
 		conn.Send(types.ResponseInfo{ValueType: content.ValueType, Value: content.Value})

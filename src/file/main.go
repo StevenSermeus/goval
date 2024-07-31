@@ -2,7 +2,6 @@ package file
 
 import (
 	"encoding/binary"
-	"fmt"
 	"os"
 	"path"
 
@@ -22,10 +21,7 @@ func WriteFile(key string, valueType string, value any, serverConfig *config.Con
 	if err != nil {
 		return err
 	}
-	fmt.Println("typeCode", typeCode)
-	fmt.Println("value", value)
-	fmt.Println("expirateAtTimestamp", expirateAtTimestamp)
-	fmt.Println("expireAtByte", byte(expirateAtTimestamp))
+
 	byteExpire := make([]byte, 8)
 
 	// Use the binary package to put the number into the byte slice in little-endian order
@@ -33,7 +29,6 @@ func WriteFile(key string, valueType string, value any, serverConfig *config.Con
 	towrite := append([]byte{}, []byte(typeCode)[0])
 	towrite = append(towrite, byteExpire...)
 	towrite = append(towrite, []byte(value.(string))...)
-	fmt.Println("towrite", towrite)
 	err = os.WriteFile(path.Join(serverConfig.DataDir, key), towrite, 0644)
 	if err != nil {
 		return err
@@ -54,8 +49,6 @@ func ReadFile(key string, serverConfig *config.Config) (FileContent, error) {
 		return FileContent{}, err
 	}
 	typeCode := string(fileContent[0])
-
-	fmt.Println("typeCode", typeCode)
 	valueType, err := utils.Type(typeCode)
 	if err != nil {
 		return FileContent{}, err

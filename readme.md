@@ -15,12 +15,13 @@ Keys are case unsensitive.
 - [x] Cache data in memory
 - [x] Support remote access
 - [x] Support ttl/EXPR (Time To Live) for keys (Planned for first release)
-- [ ] Support authentication passphrase (Planned for first release)
+- [x] Support authentication passphrase (Planned for first release)
+  - [ ] Support hash for passphrase (Not planned for first release)
 - [ ] Support authentication with user and password (Not planned for first release)
-- [ ] Version calls (Planned for first release)
-  - [ ] Get version of the server
+- [x] Version calls (Planned for first release)
+  - [x] Get version of the server
 - [ ] Manage access control (Not planned for first release)
-- [ ] Support more data types
+- [ ] Support more data types (Not planned for first release)
   - [x] Support integers increment and decrement
   - [ ] Support lists (Not planned for first release)
 - [ ] Support encryption (Not planned for first release)

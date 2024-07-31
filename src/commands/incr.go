@@ -2,7 +2,6 @@ package commands
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path"
 	"strconv"
@@ -20,7 +19,6 @@ func IsIncr(commandInfo types.CommandInfo) bool {
 func Incr(conn *types.Client, commandInfo types.CommandInfo, key string, value any) error {
 	//get current value of key from file
 	fileContent, err := file.ReadFile(key, conn.ServerConfig)
-	fmt.Println("fileContent", fileContent)
 	if err != nil {
 		return err
 	}
@@ -38,12 +36,10 @@ func Incr(conn *types.Client, commandInfo types.CommandInfo, key string, value a
 	//convert value to int
 	intValue, err := strconv.Atoi(fileContent.Value)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	incrementValue, err := strconv.Atoi(value.(string))
 	if err != nil {
-		fmt.Println(err, "2")
 		return err
 	}
 	//increment value

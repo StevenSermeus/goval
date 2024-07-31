@@ -2,7 +2,6 @@ package cache
 
 import (
 	"errors"
-	"fmt"
 	"runtime"
 	"sync"
 	"time"
@@ -38,7 +37,6 @@ func (c *Cache) ReadKey(key string) (CacheEntry, error) {
 	if !ok {
 		return CacheEntry{}, errors.New("key not found")
 	}
-	fmt.Println("Read key", key, "from cache with exp", value.(CacheEntry).exp)
 	if value.(CacheEntry).exp != 0 && time.Now().UnixMilli() > value.(CacheEntry).exp {
 		c.DeleteKey(key)
 		return CacheEntry{}, errors.New("key expired")
@@ -87,6 +85,11 @@ func handleHighMemoryUsage(cache *Cache, channel chan int) {
 	var meanHitCount float64
 	var nbEntries int
 	cache.EntryCache.Range(func(key, value interface{}) bool {
+		if value.(CacheEntry).exp != 0 && time.Now().UnixMilli() > value.(CacheEntry).exp {
+			cache.EntryCache.Delete(key)
+			entriesCleared++
+			return true
+		}
 		if minHitCount == 0 || value.(CacheEntry).AccessCount < minHitCount {
 			minHitCount = value.(CacheEntry).AccessCount
 		}

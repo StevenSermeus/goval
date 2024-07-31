@@ -9,14 +9,15 @@ import (
 )
 
 type Config struct {
-	MaxConnections int    `yaml:"maxConnections", envconfig:"MAX_CONNECTIONS" validate:"min=1"`
-	MaxCacheSize   int    `yaml:"maxCacheSize", envconfig:"MAX_CACHE_SIZE" validate:"min=1024"`
-	BufferSize     int    `yaml:"bufferSize", envconfig:"BUFFER_SIZE" validate:"min=1024"`
-	DataDir        string `yaml:"dataDir", envconfig:"DATA_DIR"`
-	Port           string `yaml:"port", envconfig:"SERVER_PORT"`
-	Passphrase     string `yaml:"passphrase", envconfig:"PASSPHRASE"`
-	User           string `yaml:"user", envconfig:"USER"`
-	NoAuth         bool   `yaml:"noAuth", envconfig:"NO_AUTH"`
+	MaxConnections int    `yaml:"maxConnections" envconfig:"MAX_CONNECTIONS" validate:"min=1"`
+	MaxCacheSize   int    `yaml:"maxCacheSize" envconfig:"MAX_CACHE_SIZE" validate:"min=1024"`
+	BufferSize     int    `yaml:"bufferSize" envconfig:"BUFFER_SIZE" validate:"min=1024"`
+	DataDir        string `yaml:"dataDir" envconfig:"DATA_DIR"`
+	Port           string `yaml:"port" envconfig:"SERVER_PORT"`
+	Passphrase     string `yaml:"passphrase" envconfig:"PASSPHRASE"`
+	User           string `yaml:"user" envconfig:"USER"`
+	NoAuth         bool   `yaml:"noAuth" envconfig:"NO_AUTH"`
+	Version        string `yaml:"version" envconfig:"VERSION"`
 }
 
 func LoadConfig() (Config, error) {
@@ -44,6 +45,9 @@ func LoadConfig() (Config, error) {
 	}
 	if cfg.User == "" {
 		cfg.User = "mew"
+	}
+	if cfg.Version == "" {
+		cfg.Version = "1.0.0"
 	}
 	return cfg, nil
 }

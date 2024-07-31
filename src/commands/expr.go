@@ -21,13 +21,11 @@ func ExecuteExprCommand(conn *types.Client, commandInfo types.CommandInfo) error
 	}
 	splitCommand := strings.Split(commandInfo.Command, " ")
 	if len(splitCommand) != 3 {
-		fmt.Println("invalid command 1")
 		return errors.New("invalid command")
 	}
 	key := splitCommand[1]
 	in, err := strconv.Atoi(splitCommand[2])
 	if err != nil {
-		fmt.Println(err, "2")
 		return err
 	}
 	return Expr(conn, commandInfo, key, int64(in))
@@ -39,9 +37,7 @@ func Expr(conn *types.Client, commandInfo types.CommandInfo, key string, in int6
 		return err
 	}
 	expireAt := time.Now().UnixMilli() + in
-	fmt.Println("Exprcall", fileContent)
 	err = file.WriteFile(key, fileContent.ValueType, fileContent.Value, conn.ServerConfig, expireAt)
-	fmt.Println("Exprcall", fileContent)
 	if err != nil {
 		fmt.Println(err, "err while update file")
 		return err

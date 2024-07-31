@@ -16,6 +16,24 @@ func HandleClient(conn net.Conn, cache *cache.Cache, serverConfig *config.Config
 		Cache:        cache,
 		ServerConfig: serverConfig,
 	}
+	isAuth := serverConfig.NoAuth
+	for !isAuth {
+		command, err := client.Receive()
+		if err != nil {
+			break
+		}
+		if command.Command[:4] == "AUTH" {
+			passphrase := command.Command[5:]
+			if passphrase == serverConfig.Passphrase {
+				client.Send(types.ResponseInfo{ValueType: "string", Value: "OK"})
+				isAuth = true
+			} else {
+				client.Send(types.ResponseInfo{ValueType: "error", Value: "ERR invalid password"})
+			}
+		} else {
+			client.Send(types.ResponseInfo{ValueType: "error", Value: "ERR Not authenticated"})
+		}
+	}
 	for {
 		command, err := client.Receive()
 		if err != nil {
