@@ -9,7 +9,8 @@ test:
 
 # Build the project
 build:
-	go build -o $(APP_NAME)
+	mkdir -p $(APP_NAME)
+	go build -o ./$(APP_NAME)/$(APP_NAME)
 
 # Clean the build
 clean:
