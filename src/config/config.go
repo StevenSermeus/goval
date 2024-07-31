@@ -19,6 +19,7 @@ type Config struct {
 	User           string `yaml:"user" envconfig:"USER"`
 	NoAuth         bool   `yaml:"noAuth" envconfig:"NO_AUTH"`
 	Version        string `yaml:"version" envconfig:"VERSION"`
+	ConfigDir      string `yaml:"configDir" envconfig:"CONFIG_DIR"`
 }
 
 func LoadConfig() (Config, error) {
@@ -36,6 +37,9 @@ func LoadConfig() (Config, error) {
 	}
 	if cfg.DataDir == "" {
 		cfg.DataDir = "./data"
+	}
+	if cfg.ConfigDir == "" {
+		cfg.ConfigDir = "./config"
 	}
 	if cfg.Port == "" {
 		cfg.Port = "8080"

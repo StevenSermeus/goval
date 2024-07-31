@@ -22,7 +22,9 @@ run: build
 	./$(APP_NAME)/$(APP_NAME)
 
 dev:
-	$(AIR_BIN)
+# Environment variables CONFIG_DIR is ./goval/config
+
+	CONFIG_DIR=./goval/config DATA_DIR=./goval/data $(AIR_BIN)
 # Install dependencies
 deps:
 	go mod tidy

@@ -32,8 +32,8 @@ func ExecuteCommad(client *types.Client, commandInfo types.CommandInfo) {
 	}
 
 	if time.Since(start) > time.Second {
-		logging.Warning.Printf("Command :%s %s %stook more than 1 second to execute", "\033[34m", commandInfo.Command, "\033[0m")
+		logging.Warning.Printf("%sCommand took more than 1 second to execute%s", "\033[34m", "\033[0m")
 	} else {
-		logging.Info.Printf("Command :%s %s %sexecuted in %s (Response might have been faster because cache update is done asynchronously)", "\033[34m", commandInfo.Command, "\033[0m", time.Since(start))
+		logging.Info.Printf("%s Command :executed in %s (Response might have been faster because cache update is done asynchronously)%s", "\033[34m", time.Since(start), "\033[0m")
 	}
 }
