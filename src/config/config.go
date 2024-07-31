@@ -42,7 +42,7 @@ func LoadConfig() (Config, error) {
 		cfg.ConfigDir = "./config"
 	}
 	if cfg.Port == "" {
-		cfg.Port = "8080"
+		cfg.Port = "6969"
 	}
 	if cfg.Passphrase == "" {
 		h := sha256.New()
