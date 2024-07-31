@@ -23,8 +23,6 @@ func WriteFile(key string, valueType string, value any, serverConfig *config.Con
 	}
 
 	byteExpire := make([]byte, 8)
-
-	// Use the binary package to put the number into the byte slice in little-endian order
 	binary.LittleEndian.PutUint64(byteExpire, uint64(expirateAtTimestamp))
 	towrite := append([]byte{}, []byte(typeCode)[0])
 	towrite = append(towrite, byteExpire...)
