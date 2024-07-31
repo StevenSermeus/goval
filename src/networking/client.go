@@ -1,6 +1,7 @@
 package networking
 
 import (
+	"crypto/sha256"
 	"net"
 
 	"github.com/StevenSermeus/goval/src/cache"
@@ -24,6 +25,9 @@ func HandleClient(conn net.Conn, cache *cache.Cache, serverConfig *config.Config
 		}
 		if command.Command[:4] == "AUTH" {
 			passphrase := command.Command[5:]
+			h := sha256.New()
+			h.Write([]byte(passphrase))
+			passphrase = string(h.Sum(nil))
 			if passphrase == serverConfig.Passphrase {
 				client.Send(types.ResponseInfo{ValueType: "string", Value: "OK"})
 				isAuth = true

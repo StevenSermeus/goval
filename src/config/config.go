@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 
@@ -40,8 +41,11 @@ func LoadConfig() (Config, error) {
 		cfg.Port = "8080"
 	}
 	if cfg.Passphrase == "" {
+		h := sha256.New()
+		h.Write([]byte("password"))
+		bs := h.Sum(nil)
 		//Hash the passphrase to store it securely in the config
-		cfg.Passphrase = "password"
+		cfg.Passphrase = string(bs)
 	}
 	if cfg.User == "" {
 		cfg.User = "mew"
